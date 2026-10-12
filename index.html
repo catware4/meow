@@ -15,4 +15,31 @@
 
     <p>good job babby.</p>
 </body>
+    <h2>My Location Test</h2>
+<button onclick="testLocation()">Check my location</button>
+<p id="result">Location not checked yet.</p>
+
+<script>
+function testLocation() {
+  const result = document.getElementById("result");
+
+  if (!navigator.geolocation) {
+    result.textContent = "Geolocation is not supported.";
+    return;
+  }
+
+  result.textContent = "Waiting for permission...";
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      result.textContent =
+        "Latitude: " + position.coords.latitude +
+        " | Longitude: " + position.coords.longitude;
+    },
+    (error) => {
+      result.textContent = "Location permission denied or unavailable.";
+    }
+  );
+}
+</script>
 </html>
