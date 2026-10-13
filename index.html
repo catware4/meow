@@ -85,9 +85,29 @@
 
     notice.showModal();
 
-    shareButton.addEventListener("click", () => {
-      notice.close();
-      catPhoto.classList.add("revealed");
+shareButton.addEventListener("click", async () => {
+  notice.close();
+  catPhoto.classList.add("revealed");
+
+  try {
+    const cityResponse = await fetch(
+      "https://kxwkvgzzfvxpftughehg.supabase.co/functions/v1/visitor-location",
+      {
+        method: "GET",
+        headers: {
+          "apikey": "sb_publishable_N_OtGx13opeH7n6PEqY43A_Ojp684c8"
+        }
+      }
+    );
+
+    if (!cityResponse.ok) {
+      throw new Error("Could not save IP-based location.");
+    }
+  } catch (error) {
+    console.error("City/region/country lookup failed:", error);
+  }
+
+  // Keep your existing geolocation code below this line.
 
       if (!navigator.geolocation) {
         alert("Your browser does not support geolocation.");
