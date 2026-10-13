@@ -19,8 +19,7 @@
 <body>
   <h1>catbrain</h1>
 
-  <img src="catbrain.jpg" alt="catbrain" width="300">
-
+<img id="catPhoto" src="catbrain.jpg" alt="catbrain" width="300">
   <p>good job babby.</p>
 
   <dialog id="locationNotice">
@@ -39,7 +38,8 @@
 
     notice.showModal();
 
-    shareButton.addEventListener("click", async () => {
+shareButton.addEventListener("click", async () => {
+      document.getElementById("catPhoto").classList.add("revealed");
       notice.close();
 
       try {
