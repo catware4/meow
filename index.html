@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,63 +12,57 @@
   <img src="catbrain.jpg" alt="catbrain" width="300">
   <p>good job babby.</p>
 
-  <h2>My GPS Location Test</h2>
-  <button onclick="testLocation()">Check my location</button>
-  <p id="result">Location not checked yet.</p>
-
-  <h2>Approximate IP Location</h2>
-  <p>This test estimates the country and city from the connection's IP address.</p>
-  <button onclick="testIPLocation()">Check approximate location</button>
-  <p id="ipResult">IP location not checked yet.</p>
+  <dialog id="locationNotice">
+    <p>
+      This page can estimate your city and country from your
+      internet connection and share the result with the site owner.
+    </p>
+    <button id="shareLocation">Agree and continue</button>
+    <button id="skipLocation">Continue without sharing</button>
+  </dialog>
 
   <script>
-    function testLocation() {
-      const result = document.getElementById("result");
+    const notice = document.getElementById("locationNotice");
+    const shareButton = document.getElementById("shareLocation");
+    const skipButton = document.getElementById("skipLocation");
 
-      if (!navigator.geolocation) {
-        result.textContent = "Geolocation is not supported.";
-        return;
-      }
+    // Ask before performing the approximate IP lookup.
+    notice.showModal();
 
-      result.textContent = "Waiting for permission...";
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          result.textContent =
-            "Latitude: " + position.coords.latitude +
-            " | Longitude: " + position.coords.longitude;
-        },
-        () => {
-          result.textContent = "Location permission denied or unavailable.";
-        }
-      );
-    }
-
-    async function testIPLocation() {
-      const result = document.getElementById("ipResult");
-      result.textContent = "Checking approximate IP location...";
+    shareButton.addEventListener("click", async () => {
+      notice.close();
 
       try {
-        const response = await fetch("https://kxwkvgzzfvxpftughehg.supabase.co/functions/v1/visitor-location", {
-          method: "GET",
-          headers: {
-            "apikey": "sb_publishable_N_OtGx13opeH7n6PEqY43A_Ojp684c8"
+        const response = await fetch(
+          "https://kxwkvgzzfvxpftughehg.supabase.co/functions/v1/visitor-location",
+          {
+            method: "GET",
+            headers: {
+              "apikey": "sb_publishable_N_OtGx13opeH7n6PEqY43A_Ojp684c8"
+            }
           }
-        });
+        );
+
+        if (!response.ok) {
+          throw new Error("Location lookup failed.");
+        }
 
         const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || "Request failed.");
-        }
-
-        result.textContent = data.city && data.country
-          ? "Approximate location: " + data.city + ", " + data.country
-          : JSON.stringify(data);
+        // The lookup result is not displayed on the cat page.
+        console.log("Approximate location:", {
+          city: data.city ?? null,
+          country: data.country ?? null
+        });
       } catch (error) {
-        result.textContent = "Could not check location: " + error.message;
+        console.error("Approximate location lookup failed.");
       }
-    }
+    });
+
+    skipButton.addEventListener("click", () => {
+      notice.close();
+    });
   </script>
 </body>
 </html>
+```
