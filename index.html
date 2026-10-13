@@ -10,20 +10,23 @@
   <h1>catbrain</h1>
 
   <img src="catbrain.jpg" alt="catbrain" width="300">
+
   <p>good job babby.</p>
 
   <dialog id="locationNotice">
     <p>
-      do you want to see the picture?
+      This page can estimate your city and country from your
+      internet connection. Do you agree to this lookup?
     </p>
-    <button id="shareLocation">yes</button>
-    <button id="shareLocation">hell yeah</button>
+    <button id="shareLocation" type="button">Agree and continue</button>
+    <button id="skipLocation" type="button">Continue without sharing</button>
   </dialog>
 
   <script>
     const notice = document.getElementById("locationNotice");
     const shareButton = document.getElementById("shareLocation");
-    // Ask before performing the approximate IP lookup.
+    const skipButton = document.getElementById("skipLocation");
+
     notice.showModal();
 
     shareButton.addEventListener("click", async () => {
@@ -35,24 +38,23 @@
           {
             method: "GET",
             headers: {
-              "apikey": "sb_publishable_N_OtGx13opeH7n6PEqY43A_Ojp684c8"
+              "apikey": "YOUR_SUPABASE_PUBLISHABLE_KEY"
             }
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Location lookup failed.");
-        }
-
         const data = await response.json();
 
-        // The lookup result is not displayed on the cat page.
+        if (!response.ok) {
+          throw new Error(data.error || "Location lookup failed.");
+        }
+
         console.log("Approximate location:", {
           city: data.city ?? null,
           country: data.country ?? null
         });
       } catch (error) {
-        console.error("Approximate location lookup failed.");
+        console.error("Approximate location lookup failed:", error.message);
       }
     });
 
